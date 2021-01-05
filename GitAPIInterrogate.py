@@ -1,23 +1,26 @@
 import sys
-import json
-import os
 from pprint import pprint
 from github import Github
+from bokeh.plotting import figure
+from bokeh.io import output_file, show
 from array import *
 
 
 def displayDetails():
-	GIT_TOKEN = "REDACTED FOR GIT UPLOAD"
+	GIT_TOKEN = "REDACTED FOR GIT COMMIT"
 	g = Github(GIT_TOKEN)
 
-	#user = input('Please enter the username to display data on: ')
-	#repo_str = input('Please enter the repo you wish to view metrics on: ')
+	user = input('Please enter the username to display data on: ')
+	repo_str = input('Please enter the repo you wish to view metrics on: ')
 
 
-	#repo = g.get_repo(f"{user}/{repo_str}")
+	repo = g.get_repo(f"{user}/{repo_str}")
 
-	repo = g.get_repo("atelier-popstar/gitAPI")
+	#repo = g.get_repo("atelier-popstar/gitAPI")
+	#repo = g.get_repo("bendunnegyms/github-api")
 	commits = repo.get_commits()
+	owner = repo.owner.login
+	avatar_url = repo.owner.avatar_url
 	commitID = []
 	commitAuthor = []
 	commitNumber = 0
@@ -51,6 +54,37 @@ def displayDetails():
 	for i in Authors:
 		print(i.name)
 		print(i.commits)
+
+	plot(Authors)
+
+
+
+def plot(Authors):
+	output_file("simple-bar-chart.html")
+
+	x_axis_author_name = []
+	y_axis_author_commits = []
+
+	for Author in Authors:
+		x_axis_author_name.append(Author.name)
+		y_axis_author_commits.append(Author.commits)
+
+	p = figure(x_range=x_axis_author_name, plot_height=250, title="Commits by Contributor", toolbar_location=None, tools="")
+
+	p.vbar(x=x_axis_author_name, top= y_axis_author_commits, width=0.2)
+
+	p.xgrid.grid_line_color = None
+	p.y_range.start = 0
+
+	show(p)
+		
+
+	#print(x_axis_author_name)
+	#print(y_axis_author_commits)
+
+
+
+
 
 class RepoContributor:
 	def __init__(self, name, commits):
