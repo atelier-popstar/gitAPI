@@ -1,5 +1,4 @@
 import sys
-import requests
 import json
 import os
 from pprint import pprint
@@ -8,7 +7,7 @@ from array import *
 
 
 def displayDetails():
-	GIT_TOKEN = "REDACTED FOR GIT COMMIT"
+	GIT_TOKEN = "REDACTED FOR GIT UPLOAD"
 	g = Github(GIT_TOKEN)
 
 	#user = input('Please enter the username to display data on: ')
@@ -40,29 +39,18 @@ def displayDetails():
 			Authors.append(RepoContributor(i, 0))
 			trimmedAuthorNames.append(i)
 	
+	cnt = 0
+
 	for commit in commits:
+		for i in Authors:
+			if commit.author.login == Authors[cnt].name:
+				Authors[cnt].commits += 1
+			cnt += 1
+		cnt = 0
 
-
-	#for i in trimmedAuthors:
-	#	print(i.name)
-	#	print(i.commits)
-
-
-	
-
-	
-
-
-	
-
-	
-	
-
-
-
-
-
-
+	for i in Authors:
+		print(i.name)
+		print(i.commits)
 
 class RepoContributor:
 	def __init__(self, name, commits):
